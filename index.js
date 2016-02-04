@@ -2,7 +2,7 @@ var exec = require('child_process').exec,
     fs = require('fs'),
     gutil = require('gulp-util');
 
-module.exports = function() {
+module.exports = (function() {
     var packageName, packageVersion;
 
     return {
@@ -144,4 +144,4 @@ module.exports = function() {
             });
         }
     };
-};
+})();
