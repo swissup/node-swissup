@@ -2,7 +2,7 @@
 
 ### Usage Examples
 
-1. Use ready to-use release builder [repository]()
+1. Use ready to-use [release builder repository](https://github.com/swissup/gulp-release-builder)
 2. Or create your own gulpfile:
 
     Create `package.json` file:
