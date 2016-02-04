@@ -83,27 +83,45 @@ module.exports = (function() {
 
             cb();
         },
+        generateComposerRequireSection: function(additionalPackages, excludeChecker) {
+            var require = {
+                'swissup/composer-swissup': '*'
+            };
+            if (!excludeChecker) {
+                // require['swissup/subscription-checker'] = '*';
+            }
+            additionalPackages.split(',').forEach(function(name) {
+                if (!name.length) {
+                    return;
+                }
+                var info = this.getPackageInfo(name);
+                require[info.name] = info.version;
+            }, this);
+
+            require[packageName] = packageVersion;
+
+            return require;
+        },
         initComposerJson: function(additionalPackages, excludeChecker) {
             var filename = this.getPath('composer.json');
             try {
                 fs.accessSync(filename, fs.W_OK);
-                gutil.log(
-                    gutil.colors.magenta("Warning!"),
-                    gutil.colors.cyan(
-                        "Existing composer.json with previously generated data will be used."
-                    )
-                );
-                gutil.log(gutil.colors.cyan(
-                    "If you would like to change composer.json, use `--reset` option."
-                ));
+                var data = fs.readFileSync(filename, {
+                    encoding: 'utf8'
+                });
+
+                data = JSON.parse(data);
+                data.require = this.generateComposerRequireSection(additionalPackages, excludeChecker);
+                fs.writeFileSync(filename, JSON.stringify(data, null, 4), 'utf8', function(err) {
+                    console.log(err);
+                });
+
                 return this;
             } catch (e) {}
 
             var content = {
                 "minimum-stability": "dev",
-                require: {
-                    "swissup/composer-swissup": "*"
-                },
+                require: this.generateComposerRequireSection(additionalPackages, excludeChecker),
                 repositories: [{
                     type: "composer",
                     url: "http://swissup.github.io/packages/"
@@ -115,20 +133,8 @@ module.exports = (function() {
                     url: "git@github.com:swissup/composer-swissup.git"
                 }]
             };
-            if (!excludeChecker) {
-                // content.require['swissup/subscription-checker'] = '*';
-            }
-            additionalPackages.split(',').forEach(function(name) {
-                if (!name.length) {
-                    return;
-                }
-                var info = this.getPackageInfo(name);
-                content.require[info.name] = info.version;
-            }, this);
-            content.require[packageName] = packageVersion;
 
-            content = JSON.stringify(content, null, 4);
-            fs.writeFileSync(filename, content, 'utf8', function(err) {
+            fs.writeFileSync(filename, JSON.stringify(content, null, 4), 'utf8', function(err) {
                 console.log(err);
             });
 
