@@ -37,7 +37,7 @@ module.exports = (function() {
             return info;
         },
         getArchiveName: function() {
-            var version = packageVersion.replace(/[^a-zA-Z0-9]/, '');
+            var version = packageVersion.replace(/[^a-zA-Z0-9.\-]/, '');
             if (!version.length) {
                 var date = new Date();
                 version = [
