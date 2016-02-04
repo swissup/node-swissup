@@ -7,15 +7,9 @@ module.exports = (function() {
 
     return {
         setPackage: function(name) {
-            if (name.indexOf('/') === -1) {
-                name = 'swissup/' + name;
-            }
-            if (name.indexOf(':') === -1) {
-                name += ':*';
-            }
-
-            packageName = name.split(':')[0];
-            packageVersion = name.split(':')[1];
+            var info = this.getPackageInfo(name);
+            packageName = info.name;
+            packageVersion = info.version;
 
             var parent = '';
             this.getDestinationFolder().split('/').forEach(function(folder) {
@@ -27,6 +21,20 @@ module.exports = (function() {
                 parent = folder + '/';
             });
             return this;
+        },
+        getPackageInfo: function(name) {
+            var info = {};
+            if (name.indexOf('/') === -1) {
+                name = 'swissup/' + name;
+            }
+            if (name.indexOf(':') === -1) {
+                name += ':*';
+            }
+
+            info.name = name.split(':')[0];
+            info.version = name.split(':')[1];
+
+            return info;
         },
         getArchiveName: function() {
             var version = packageVersion.replace(/[^a-zA-Z0-9]/, '');
@@ -110,13 +118,13 @@ module.exports = (function() {
             if (!excludeChecker) {
                 // content.require['swissup/subscription-checker'] = '*';
             }
-            additionalPackages.split(',').forEach(function(package) {
-                if (!package.length) {
+            additionalPackages.split(',').forEach(function(name) {
+                if (!name.length) {
                     return;
                 }
-                package = package.split(':');
-                content.require[package[0]] = package[1] ? package[1] : '*';
-            });
+                var info = this.getPackageInfo(name);
+                content.require[info.name] = info.version;
+            }, this);
             content.require[packageName] = packageVersion;
 
             content = JSON.stringify(content, null, 4);
