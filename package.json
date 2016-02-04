@@ -1,0 +1,13 @@
+{
+    "name": "node-swissup",
+    "version": "0.1.0",
+    "description": "Release builder tool for swissup modules",
+    "private": true,
+    "repository": {
+        "type": "git",
+        "url": "git://github.com/swissup/node-swissup.git"
+    },
+    "dependencies": {
+        "gulp-util": "^3.0.7"
+    }
+}
