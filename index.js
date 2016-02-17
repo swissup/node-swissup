@@ -3,13 +3,14 @@ var exec = require('child_process').exec,
     gutil = require('gulp-util');
 
 module.exports = (function() {
-    var packageName, packageVersion;
+    var packageVendor, packageName, packageVersion;
 
     return {
         setPackage: function(name) {
             var info = this.getPackageInfo(name);
             packageName = info.name;
             packageVersion = info.version;
+            packageVendor = info.vendor;
 
             var parent = '';
             this.getDestinationFolder().split('/').forEach(function(folder) {
@@ -33,6 +34,7 @@ module.exports = (function() {
 
             info.name = name.split(':')[0];
             info.version = name.split(':')[1];
+            info.vendor = name.split('/')[0];
 
             return info;
         },
@@ -84,12 +86,21 @@ module.exports = (function() {
             cb();
         },
         generateComposerRequireSection: function(additionalPackages, excludeChecker) {
-            var require = {
-                'swissup/composer-swissup': '*'
-            };
-            if (!excludeChecker) {
-                require['swissup/subscription-checker'] = '*';
+            var require = {};
+
+            switch (packageVendor) {
+                case 'swissup':
+                    require['swissup/composer-swissup'] = '*';
+                    break;
+                case 'tm':
+                    require['magento-hackathon/magento-composer-installer'] = '3.0.*';
+                    break;
             }
+
+            if (!excludeChecker) {
+                require[packageVendor + '/subscription-checker'] = '*';
+            }
+
             additionalPackages.split(',').forEach(function(name) {
                 if (!name.length) {
                     return;
@@ -134,6 +145,15 @@ module.exports = (function() {
                 }]
             };
 
+            // magento 1.x modules
+            if (packageVendor === 'tm') {
+                content.extra = {
+                    "magento-root-dir": "src",
+                    "magento-deploystrategy": "copy",
+                    "magento-force": true
+                };
+            }
+
             fs.writeFileSync(filename, JSON.stringify(content, null, 4), 'utf8', function(err) {
                 console.log(err);
             });
@@ -151,10 +171,18 @@ module.exports = (function() {
             }
 
             gutil.log(cmd, 'is running');
-            exec(this.getCmd(cmd + ' --no-autoloader'), function (err, stdout, stderr) {
-                console.log(stdout);
-                console.log(stderr);
-                cb(err);
+            var self = this;
+            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction'), function (err, stdout, stderr) {
+                if (err === null && packageVendor === 'tm') {
+                    exec(
+                        self.getCmd('composer run-script post-install-cmd -- --redeploy'),
+                        function (err, stdout, stderr) {
+                            cb(err);
+                        }
+                    );
+                } else {
+                    cb(err);
+                }
             });
         }
     };
