@@ -36,7 +36,7 @@
 
     gulp.task('default', ['composer'], function(cb) {
         swissup.setPackage(module);
-        return gulp.src(swissup.getPath('release/**/*'))
+        return gulp.src(swissup.getPath('src/**/*'))
             .pipe(zip(swissup.getArchiveName()))
             .pipe(gulp.dest(swissup.getPath('bin')));
     });
