@@ -88,7 +88,7 @@ module.exports = (function() {
                 'swissup/composer-swissup': '*'
             };
             if (!excludeChecker) {
-                // require['swissup/subscription-checker'] = '*';
+                require['swissup/subscription-checker'] = '*';
             }
             additionalPackages.split(',').forEach(function(name) {
                 if (!name.length) {
