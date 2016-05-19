@@ -136,7 +136,7 @@ module.exports = (function() {
             } catch (e) {}
 
             var content = {
-                "minimum-stability": "dev",
+                "minimum-stability": "stable",
                 require: this.generateComposerRequireSection(additionalPackages, excludeChecker),
                 repositories: [{
                     type: "composer",
