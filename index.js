@@ -97,11 +97,6 @@ module.exports = (function() {
                     break;
             }
 
-            // bad code here. Need to detect package type..
-            if (packageName === 'argento/m2') {
-                require['swissup/composer-swissup'] = '*';
-            }
-
             if (!excludeChecker) {
                 require[packageVendor + '/subscription-checker'] = '*';
             }
