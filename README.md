@@ -6,7 +6,7 @@
 2. Or create your own gulpfile:
 
     Create `package.json` file:
-    
+
     ```json
     {
         "private": true,
@@ -28,17 +28,17 @@
     var module = 'swissup/highlight';
 
     gulp.task('composer', function(cb) {
-        swissup
+        swissup()
             .setPackage(module)
             .initComposerJson()
             .runComposer(cb);
     });
 
     gulp.task('default', ['composer'], function(cb) {
-        swissup.setPackage(module);
-        return gulp.src(swissup.getPath('src/**/*'))
-            .pipe(zip(swissup.getArchiveName()))
-            .pipe(gulp.dest(swissup.getPath('bin')));
+        var packager = swissup().setPackage(module);
+        return gulp.src(packager.getPath('src/**/*'))
+            .pipe(zip(packager.getArchiveName()))
+            .pipe(gulp.dest(packager.getPath('bin')));
     });
     ```
 
