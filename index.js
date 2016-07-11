@@ -3,9 +3,16 @@ var exec = require('child_process').exec,
     gutil = require('gulp-util');
 
 module.exports = function() {
-    var packageVendor, packageName, packageVersion;
+    var packageVendor,
+        packageName,
+        packageVersion,
+        nochecker = false;
 
     return {
+        setNochecker: function(flag) {
+            nochecker = flag;
+            return this;
+        },
         setPackage: function(name) {
             var info = this.getPackageInfo(name);
             packageName = info.name;
@@ -48,10 +55,14 @@ module.exports = function() {
                     ("0" + date.getDate()).slice(-2)
                 ].join('-');
             }
-            return packageName.split('/')[1] + '-' + version + '.zip';
+            return packageName.split('/')[1] +
+                '-' +
+                version +
+                (nochecker ? '' : '-swissup') +
+                '.zip';
         },
         getDestinationFolder: function() {
-            return packageName;
+            return packageName + '/' + (nochecker ? '-nochecker' : '-checker');
         },
         getPath: function(file) {
             return this.getDestinationFolder() + '/' + file;
@@ -85,7 +96,7 @@ module.exports = function() {
 
             cb();
         },
-        generateComposerRequireSection: function(additionalPackages, excludeChecker) {
+        generateComposerRequireSection: function(additionalPackages) {
             var require = {};
 
             switch (packageVendor) {
@@ -97,7 +108,7 @@ module.exports = function() {
                     break;
             }
 
-            if (!excludeChecker) {
+            if (!nochecker) {
                 require[packageVendor + '/subscription-checker'] = '*';
             }
 
@@ -113,7 +124,7 @@ module.exports = function() {
 
             return require;
         },
-        initComposerJson: function(additionalPackages, excludeChecker) {
+        initComposerJson: function(additionalPackages) {
             var filename = this.getPath('composer.json');
             try {
                 fs.accessSync(filename, fs.W_OK);
@@ -122,7 +133,7 @@ module.exports = function() {
                 });
 
                 data = JSON.parse(data);
-                data.require = this.generateComposerRequireSection(additionalPackages, excludeChecker);
+                data.require = this.generateComposerRequireSection(additionalPackages);
                 fs.writeFileSync(filename, JSON.stringify(data, null, 4), 'utf8', function(err) {
                     console.log(err);
                 });
@@ -135,7 +146,7 @@ module.exports = function() {
                 config: {
                     "secure-http": false
                 },
-                require: this.generateComposerRequireSection(additionalPackages, excludeChecker),
+                require: this.generateComposerRequireSection(additionalPackages),
                 repositories: [{
                     type: "composer",
                     url: "http://swissup.github.io/packages/"
