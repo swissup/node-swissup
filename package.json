@@ -1,6 +1,6 @@
 {
     "name": "node-swissup",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "description": "Release builder tool for swissup modules",
     "private": true,
     "repository": {
