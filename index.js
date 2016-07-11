@@ -61,6 +61,9 @@ module.exports = function() {
                 (nochecker ? '' : '-swissup') +
                 '.zip';
         },
+        getVendorName: function() {
+            return packageVendor;
+        },
         getDestinationFolder: function() {
             return packageName + (nochecker ? '-nochecker' : '-checker');
         },
