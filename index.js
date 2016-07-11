@@ -62,7 +62,7 @@ module.exports = function() {
                 '.zip';
         },
         getDestinationFolder: function() {
-            return packageName + '/' + (nochecker ? '-nochecker' : '-checker');
+            return packageName + (nochecker ? '-nochecker' : '-checker');
         },
         getPath: function(file) {
             return this.getDestinationFolder() + '/' + file;
