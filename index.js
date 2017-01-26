@@ -189,7 +189,7 @@ module.exports = function() {
 
             gutil.log(cmd, 'is running');
             var self = this;
-            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction'), function (err, stdout, stderr) {
+            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction --ignore-platform-reqs'), function (err, stdout, stderr) {
                 if (err === null && packageVendor === 'tm') {
                     exec(
                         self.getCmd('composer run-script post-install-cmd -- --redeploy'),
