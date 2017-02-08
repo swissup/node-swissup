@@ -195,7 +195,9 @@ module.exports = function() {
                         self.getCmd('composer run-script post-install-cmd -- --redeploy'),
                         function (err, stdout, stderr) {
                             cb(err);
-                            console.error(err);
+                            if (err !== null) {
+                                console.error(err);
+                            }
                         }
                     );
                 } else {
