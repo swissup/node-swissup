@@ -6,9 +6,13 @@ module.exports = function() {
     var packageVendor,
         packageName,
         packageVersion,
-        nochecker = false;
-
+        nochecker = false,
+        nocore = false;
     return {
+        setNocore: function(flag) {
+            nocore = flag;
+            return this;
+        },
         setNochecker: function(flag) {
             nochecker = flag;
             return this;
@@ -189,15 +193,17 @@ module.exports = function() {
 
             gutil.log(cmd, 'is running');
             var self = this;
-            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction --ignore-platform-reqs'), function (err, stdout, stderr) {
+            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction --no-custom-installers'), function (err, stdout, stderr) {
                 if (err === null && packageVendor === 'tm') {
+                    cmd = 'composer run-script post-install-cmd -- --redeploy';
+                    if (nocore) {
+                        cmd = 'rm -rf vendor/tm/core && ' + cmd;
+                    }
                     exec(
-                        self.getCmd('composer run-script post-install-cmd -- --redeploy'),
+                        self.getCmd(cmd),
                         function (err, stdout, stderr) {
                             cb(err);
-                            if (err !== null) {
-                                console.error(err);
-                            }
+                            console.error(err);
                         }
                     );
                 } else {
