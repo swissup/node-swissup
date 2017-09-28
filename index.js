@@ -182,7 +182,17 @@ module.exports = function() {
             return this;
         },
         runComposer: function(cb) {
+            var self = this;
             var cmd;
+            var options = [
+                '--no-autoloader',
+                '--no-interaction',
+                '--ignore-platform-reqs'
+            ];
+
+            if (packageVendor === 'tm') {
+                options.push('--no-custom-installers')
+            }
 
             try {
                 fs.accessSync(this.getPath('composer.lock'), fs.F_OK);
@@ -192,10 +202,21 @@ module.exports = function() {
             }
 
             gutil.log(cmd, 'is running');
-            var self = this;
-            exec(this.getCmd(cmd + ' --no-autoloader --no-interaction --no-custom-installers --ignore-platform-reqs'), function (err, stdout, stderr) {
-                if (err === null && packageVendor === 'tm') {
-                    cmd = 'composer run-script post-install-cmd -- --redeploy';
+
+            exec(
+                this.getCmd(cmd + ' ' + options.join(' ')),
+                function (err, stdout, stderr) {
+                    if (err !== null) {
+                        cb(err);
+                        console.error(err);
+                        return;
+                    }
+
+                    if (packageVendor !== 'tm') {
+                        return cb();
+                    }
+
+                    var cmd = 'composer run-script post-install-cmd -- --redeploy';
                     if (nocore) {
                         cmd = 'rm -rf vendor/tm/core && ' + cmd;
                     }
@@ -206,11 +227,8 @@ module.exports = function() {
                             console.error(err);
                         }
                     );
-                } else {
-                    cb(err);
-                    console.error(err);
                 }
-            });
+            );
         }
     };
 };
