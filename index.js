@@ -63,6 +63,7 @@ module.exports = function() {
                 '-' +
                 version +
                 (nochecker ? '' : '-swissup') +
+                (nocore ? '-nocore' : '') +
                 '.zip';
         },
         getVendorName: function() {
