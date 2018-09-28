@@ -109,7 +109,7 @@ module.exports = function() {
 
             switch (packageVendor) {
                 case 'swissup':
-                    require['swissup/composer-swissup'] = '*';
+                    require['swissup/composer-swissup'] = '^1.1.0';
                     break;
                 case 'tm':
                     require['magento-hackathon/magento-composer-installer'] = '3.0.*';
@@ -117,7 +117,7 @@ module.exports = function() {
             }
 
             if (!nochecker) {
-                require[packageVendor + '/subscription-checker'] = '*';
+                require[packageVendor + '/module-subscription-checker'] = '^1.2.0';
             }
 
             additionalPackages.split(',').forEach(function(name) {
@@ -151,16 +151,13 @@ module.exports = function() {
 
             var content = {
                 "minimum-stability": "stable",
-                config: {
-                    "secure-http": false
-                },
                 require: this.generateComposerRequireSection(additionalPackages),
                 repositories: [{
                     type: "composer",
-                    url: "http://swissup.github.io/packages/"
+                    url: "https://docs.swissuplabs.com/packages/"
                 }, {
                     type: "composer",
-                    url: "http://tmhub.github.io/packages/"
+                    url: "https://tmhub.github.io/packages/"
                 }, {
                     type: "vcs",
                     url: "git@github.com:swissup/composer-swissup.git"
@@ -192,7 +189,7 @@ module.exports = function() {
             ];
 
             if (packageVendor === 'tm') {
-                options.push('--no-custom-installers')
+                options.push('--no-custom-installers');
             }
 
             try {
