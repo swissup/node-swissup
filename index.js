@@ -110,14 +110,16 @@ module.exports = function() {
             switch (packageVendor) {
                 case 'swissup':
                     require['swissup/composer-swissup'] = '^1.1.0';
+                    if (!nochecker) {
+                        require['swissup/module-subscription-checker'] = '^1.2.0';
+                    }
                     break;
                 case 'tm':
                     require['magento-hackathon/magento-composer-installer'] = '3.0.*';
+                    if (!nochecker) {
+                        require['tm/subscription-checker'] = '*';
+                    }
                     break;
-            }
-
-            if (!nochecker) {
-                require[packageVendor + '/module-subscription-checker'] = '^1.2.0';
             }
 
             additionalPackages.split(',').forEach(function(name) {
