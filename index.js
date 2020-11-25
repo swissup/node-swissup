@@ -191,7 +191,7 @@ module.exports = function() {
             ];
 
             if (packageVendor === 'tm') {
-                options.push('--no-custom-installers');
+                options.push('--no-plugins');
             }
 
             try {
