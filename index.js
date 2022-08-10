@@ -115,7 +115,7 @@ module.exports = function() {
                     }
                     break;
                 case 'tm':
-                    require['magento-hackathon/magento-composer-installer'] = '3.0.*';
+                    require['magento-hackathon/magento-composer-installer'] = '^4.0.0';
                     if (!nochecker) {
                         require['tm/subscription-checker'] = '*';
                     }
@@ -172,6 +172,11 @@ module.exports = function() {
                     "magento-root-dir": "src",
                     "magento-deploystrategy": "copy",
                     "magento-force": true
+                };
+                content.config = {
+                    "allow-plugins": {
+                        "magento-hackathon/magento-composer-installer": true
+                    }
                 };
             }
 
